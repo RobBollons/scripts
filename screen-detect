@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# DEFAULTS
+VGA="--off"
+HDMI="--off"
+
+# VARIABLES
+FIRST_SCREEN_POS="0x0"
+SECOND_SCREEN_POS="0x0"
+FIRST_SCREEN_MODE="1920x1080"
+SECOND_SCREEN_MODE="1920x1080"
+
+# DETECT SCREENS
+# HDMI
+if [ $( xrandr | grep 'HDMI1 connected' | wc -l ) -eq 1 ];
+then
+    HDMI="--mode $SECOND_SCREEN_MODE --pos 0x0 --rotate normal"
+    FIRST_SCREEN_POS="1920x0"
+    notify-send "Enabling HDMI"
+else
+    HDMI="--off"
+fi
+
+# VGA
+if [ $( xrandr | grep 'VGA1 connected' | wc -l ) -eq 1 ];
+then
+    VGA="--mode $SECOND_SCREEN_MODE --pos 0x0 --rotate normal"
+    FIRST_SCREEN_POS="1920x0"
+    notify-send "Enabling VGA"
+else
+    VGA="--off"
+fi
+
+xrandr --output HDMI1 $HDMI \
+       --output LVDS1 --mode 1920x1080 --pos $FIRST_SCREEN_POS --rotate normal \
+       --output DP1 --off \
+       --output VGA1 $VGA
